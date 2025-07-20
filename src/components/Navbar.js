@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/solid"; // 🟡 Requires Heroicons
+import { SunIcon, MoonIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 
 const Navbar = ({ toggleDarkMode, isDarkMode }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      setMenuOpen(false); // close menu after click
+    }
   };
+
+  const navLinks = [
+    { name: "About", id: "about" },
+    { name: "Skills", id: "skills" },
+    { name: "Projects", id: "projects" },
+    { name: "Experience", id: "experience" },
+    { name: "Education", id: "education" },
+    { name: "Contact", id: "contact" },
+  ];
 
   return (
     <motion.nav
@@ -16,34 +30,27 @@ const Navbar = ({ toggleDarkMode, isDarkMode }) => {
       transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto flex justify-between items-center">
+        {/* Left Logo / Name */}
         <button onClick={() => scrollTo("hero")} className="text-2xl font-bold">
           Shiv Kumar Thakur
         </button>
 
-        <div className="flex items-center space-x-4">
-          <button onClick={() => scrollTo("about")} className="hover:underline">
-            About
-          </button>
-          <button onClick={() => scrollTo("skills")} className="hover:underline">
-            Skills
-          </button>
-          <button onClick={() => scrollTo("projects")} className="hover:underline">
-            Projects
-          </button>
-          <button onClick={() => scrollTo("experience")} className="hover:underline">
-            Experience
-          </button>
-          <button onClick={() => scrollTo("education")} className="hover:underline">
-            Education
-          </button>
-          <button onClick={() => scrollTo("contact")} className="hover:underline">
-            Contact
-          </button>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center space-x-4">
+          {navLinks.map((link) => (
+            <button
+              key={link.id}
+              onClick={() => scrollTo(link.id)}
+              className="hover:underline transition-colors"
+            >
+              {link.name}
+            </button>
+          ))}
 
-          {/* 🌗 Theme Toggle Button */}
+          {/* 🌗 Theme Toggle */}
           <button
             onClick={toggleDarkMode}
-            className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:scale-110 transition"
+            className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:scale-110 transition"
             title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDarkMode ? (
@@ -53,7 +60,43 @@ const Navbar = ({ toggleDarkMode, isDarkMode }) => {
             )}
           </button>
         </div>
+
+        {/* Mobile Menu Icon */}
+        <div className="md:hidden flex items-center gap-3">
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-black dark:text-white"
+          >
+            {isDarkMode ? (
+              <SunIcon className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <MoonIcon className="w-5 h-5 text-gray-800" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-black dark:text-white"
+          >
+            {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Dropdown Menu */}
+      {menuOpen && (
+        <div className="md:hidden mt-3 px-4 pb-4 flex flex-col space-y-3 bg-white dark:bg-gray-800 shadow-md rounded-b">
+          {navLinks.map((link) => (
+            <button
+              key={link.id}
+              onClick={() => scrollTo(link.id)}
+              className="text-left w-full hover:underline transition"
+            >
+              {link.name}
+            </button>
+          ))}
+        </div>
+      )}
     </motion.nav>
   );
 };
